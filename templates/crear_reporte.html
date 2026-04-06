@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Reporte - GUIDEX{% endblock %}
+
+{% block content %}
+<div class="main-container animate-fadeIn">
+    <!-- Encabezado de impresión -->
+    <div class="print-header">
+        <h1>GUIDEX - Sistema de Gestión Orientación & Psicología</h1>
+        <p>Reporte de Orientación Estudiantil</p>
+    </div>
+    
+    <!-- Encabezado -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-primary">Crear Reporte</h1>
+            <p class="text-secondary mt-2">Complete el formulario para crear un nuevo reporte de orientación</p>
+        </div>
+        <button onclick="window.print()" class="btn-print no-print">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            Imprimir
+        </button>
+    </div>
+    
+    <!-- Formulario -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Formulario de Reporte</h2>
+            <p class="card-subtitle">Todos los campos son obligatorios</p>
+        </div>
+        
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('crear_reporte') }}" enctype="multipart/form-data">
+                <!-- Información del Estudiante -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-4 text-primary">Información del Estudiante</h3>
+                    
+                    <div class="grid grid-2 gap-4">
+                        <div class="form-group">
+                            <label for="estudiante_nombre" class="form-label">Nombre Completo del Estudiante</label>
+                            <input type="text" id="estudiante_nombre" name="estudiante_nombre" class="form-input" placeholder="Ej: Juan Pérez García" required>
+                        </div>
+                        
+
+                    </div>
+                    
+                    <div class="grid grid-2 gap-4">
+                        <div class="form-group">
+                            <label for="estudiante_grado" class="form-label">Área</label>
+                            <select id="estudiante_grado" name="estudiante_grado" class="form-select" required>
+                                <option value="">Seleccionar área</option>
+                                <option value="Informática">Informática</option>
+                                <option value="Logística">Logística</option>
+                                <option value="Mecánica">Mecánica</option>
+                                <option value="Electrónica">Electrónica</option>
+                                <option value="Electricidad">Electricidad</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="estudiante_seccion" class="form-label">Sección</label>
+                            <select id="estudiante_seccion" name="estudiante_seccion" class="form-select" required>
+                                <option value="">Seleccionar sección</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Información del Reporte -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-4 text-primary">Información del Reporte</h3>
+                    
+                    <div class="grid grid-2 gap-4">
+                        <div class="form-group">
+                            <label for="fecha_hora" class="form-label">Fecha y Hora</label>
+                            <input type="datetime-local" id="fecha_hora" name="fecha_hora" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="nombre_docente" class="form-label">Nombre del Docente</label>
+                            <input type="text" id="nombre_docente" name="nombre_docente" class="form-input" placeholder="Nombre del docente" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="motivo" class="form-label">Conducta Observada</label>
+                        <select id="motivo" name="motivo" class="form-select" required>
+                            <option value="">Seleccionar conducta</option>
+                            <option value="Indisciplina">Indisciplina</option>
+                            <option value="Agresividad">Agresividad</option>
+                            <option value="Inseguridad">Inseguridad</option>
+                            <option value="Irresponsable">Irresponsable</option>
+                            <option value="Irrespetuoso">Irrespetuoso</option>
+                            <option value="No realiza tareas">No realiza tareas</option>
+                            <option value="No socializa">No socializa</option>
+                            <option value="Teme a los exámenes">Teme a los exámenes</option>
+                            <option value="Se distrae con facilidad">Se distrae con facilidad</option>
+                            <option value="Miedo escénico">Miedo escénico</option>
+                            <option value="Siempre está aislado">Siempre está aislado</option>
+                            <option value="No participa en clases">No participa en clases</option>
+                            <option value="Interrumpe las clases">Interrumpe las clases</option>
+                            <option value="Exhibe conducta desafiante">Exhibe conducta desafiante</option>
+                            <option value="Es descuidado con su apariencia personal">Es descuidado con su apariencia personal</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="descripcion" class="form-label">Descripción Detallada</label>
+                        <textarea id="descripcion" name="descripcion" class="form-textarea" rows="6" placeholder="Describa la situación o motivo del reporte..." required></textarea>
+                    </div>
+                    
+
+                </div>
+                
+                <!-- Orientadora Asignada -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-4 text-primary">Orientadora Asignada</h3>
+                    
+                    <div class="form-group">
+                        <label for="orientadora_id" class="form-label">Seleccionar Orientadora</label>
+                        <select id="orientadora_id" name="orientadora_id" class="form-select" required>
+                            <option value="">Seleccionar orientadora</option>
+                            {% for orientadora in orientadoras %}
+                            <option value="{{ orientadora.id }}">{{ orientadora.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="form-actions flex gap-4 no-print">
+                    <button type="submit" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Guardar Reporte
+                    </button>
+                    <a href="{{ url_for('inicio_docente') }}" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+            
+            <!-- Sección de Evidencias -->
+            <div class="mt-6 p-4 bg-tertiary rounded-lg">
+                <h3 class="text-lg font-semibold mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="inline mr-2">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                    </svg>
+                    Evidencias (Opcional)
+                </h3>
+                <p class="text-sm text-secondary mb-4">Adjunte imágenes, documentos o videos como evidencia del reporte</p>
+                
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="evidencias" name="evidencias" multiple accept=".jpg,.jpeg,.png,.gif,.pdf,.docx,.doc,.mp4,.webm,.avi" class="file-input" onchange="previewFiles()">
+                    <div class="upload-content">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-tertiary">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <p class="font-medium">Haga clic para seleccionar archivos</p>
+                        <p class="text-sm text-tertiary">o arrastre y suelte aquí</p>
+                        <p class="text-xs text-tertiary mt-2">JPG, PNG, PDF, DOCX, MP4 (máx 10MB)</p>
+                    </div>
+                </div>
+                
+                <!-- Lista de archivos seleccionados -->
+                <div id="fileList" class="mt-4"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pie de página de impresión -->
+    <div class="print-footer">
+        <p>GUIDEX - Sistema de Gestión Orientación & Psicología | Fecha de impresión: <span id="print-date"></span></p>
+    </div>
+</div>
+
+<script>
+    // Establecer fecha de impresión
+    document.getElementById('print-date').textContent = new Date().toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    // Preview de archivos seleccionados
+    function previewFiles() {
+        const input = document.getElementById('evidencias');
+        const fileList = document.getElementById('fileList');
+        const files = input.files;
+        
+        if (files.length === 0) {
+            fileList.innerHTML = '';
+            return;
+        }
+        
+        let html = '<div class="grid grid-2 gap-2">';
+        
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const ext = file.name.split('.').pop().toLowerCase();
+            let icon = '';
+            let color = '';
+            
+            if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+                icon = '🖼️';
+                color = '#3b82f6';
+            } else if (ext === 'pdf') {
+                icon = '📄';
+                color = '#ef4444';
+            } else if (['docx', 'doc'].includes(ext)) {
+                icon = '📝';
+                color = '#2563eb';
+            } else if (['mp4', 'webm', 'avi'].includes(ext)) {
+                icon = '🎬';
+                color = '#8b5cf6';
+            } else {
+                icon = '📎';
+                color = '#6b7280';
+            }
+            
+            const size = (file.size / 1024 / 1024).toFixed(2);
+            
+            html += `
+                <div class="file-item flex items-center gap-2 p-2 bg-white rounded border">
+                    <span class="text-xl">${icon}</span>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium truncate">${file.name}</p>
+                        <p class="text-xs text-tertiary">${size} MB</p>
+                    </div>
+                    <button type="button" onclick="removeFile(${i})" class="text-danger hover:bg-danger-light p-1 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            `;
+        }
+        
+        html += '</div>';
+        fileList.innerHTML = html;
+    }
+    
+    function removeFile(index) {
+        const input = document.getElementById('evidencias');
+        const files = Array.from(input.files);
+        files.splice(index, 1);
+        
+        const newFiles = new DataTransfer();
+        files.forEach(f => newFiles.items.add(f));
+        input.files = newFiles.files;
+        
+        previewFiles();
+    }
+    
+    // Drag and drop
+    const uploadArea = document.getElementById('uploadArea');
+    
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('drag-over');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('drag-over');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('drag-over');
+        
+        const input = document.getElementById('evidencias');
+        const files = Array.from(input.files);
+        const droppedFiles = Array.from(e.dataTransfer.files);
+        
+        const allFiles = [...files, ...droppedFiles];
+        const newFiles = new DataTransfer();
+        allFiles.forEach(f => newFiles.items.add(f));
+        input.files = newFiles.files;
+        
+        previewFiles();
+    });
+</script>
+
+<style>
+.upload-area {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.upload-area:hover {
+    border-color: var(--primary);
+    background: var(--bg-tertiary);
+}
+
+.upload-area.drag-over {
+    border-color: var(--primary);
+    background: rgba(37, 99, 235, 0.1);
+}
+
+.file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.upload-content {
+    pointer-events: none;
+}
+
+.file-item {
+    transition: all var(--transition-fast);
+}
+
+.file-item:hover {
+    background: var(--bg-tertiary);
+}
+</style>
+{% endblock %}

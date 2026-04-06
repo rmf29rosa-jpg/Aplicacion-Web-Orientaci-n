@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Acerca de - GUIDEX{% endblock %}
+{% block page_title %}Acerca de GUIDEX{% endblock %}
+{% block page_subtitle %}Información Institucional{% endblock %}
+
+{% block content %}
+<div class="main-container animate-fadeIn">
+    <!-- Institución -->
+    <div class="card mb-6">
+        <div class="card-body text-center py-6">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="GUIDEX Logo" style="width: 80px; height: 80px; margin-bottom: 1rem;">
+            <h1 class="text-3xl font-bold text-primary" style="margin-bottom: 0.5rem;">GUIDEX</h1>
+            <p class="text-secondary" style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                Plataforma digital diseñada para gestionar reportes, informes y acuerdos del departamento de orientación, facilitando el seguimiento del bienestar y desarrollo estudiantil.
+            </p>
+        </div>
+    </div>
+
+    <!-- Información Institucional -->
+    <div class="grid grid-2 gap-6 mb-6">
+        <!-- Institución -->
+        <div class="card">
+            <div class="card-header">
+                <div class="flex items-center gap-3">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="card-title" style="margin: 0;">Institución</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <h4 style="font-size: 1.25rem; font-weight: 600; color: #1e3a5f; margin-bottom: 0.5rem;">Instituto Politécnico Ing. José Delio Guzmán</h4>
+                <p class="text-secondary">Departamento de Orientación</p>
+            </div>
+        </div>
+
+        <!-- ¿Qué puedes hacer? -->
+        <div class="card">
+            <div class="card-header">
+                <div class="flex items-center gap-3">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 11 12 14 22 4"></polyline>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="card-title" style="margin: 0;">¿Qué puedes hacer en GUIDEX?</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li class="flex items-center gap-2 mb-2">
+                        <span style="color: #10b981;">✓</span>
+                        <span class="text-secondary">Gestionar reportes de estudiantes</span>
+                    </li>
+                    <li class="flex items-center gap-2 mb-2">
+                        <span style="color: #10b981;">✓</span>
+                        <span class="text-secondary">Crear informes de orientación</span>
+                    </li>
+                    <li class="flex items-center gap-2 mb-2">
+                        <span style="color: #10b981;">✓</span>
+                        <span class="text-secondary">Dar seguimiento a acuerdos</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span style="color: #10b981;">✓</span>
+                        <span class="text-secondary">Organizar documentos en archivos</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Misión, Visión y Valores -->
+    <div class="grid grid-3 gap-6">
+        <!-- Misión -->
+        <div class="card">
+            <div class="card-header" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                <div class="flex items-center gap-3">
+                    <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="16"></line>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="card-title" style="margin: 0; color: white;">Misión</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="text-secondary" style="line-height: 1.8;">
+                    Brindar apoyo integral a los estudiantes mediante orientación académica, personal y social, promoviendo su desarrollo y bienestar dentro de la institución.
+                </p>
+            </div>
+        </div>
+
+        <!-- Visión -->
+        <div class="card">
+            <div class="card-header" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">
+                <div class="flex items-center gap-3">
+                    <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="card-title" style="margin: 0; color: white;">Visión</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="text-secondary" style="line-height: 1.8;">
+                    Ser un departamento referente en la orientación estudiantil, utilizando herramientas digitales innovadoras que fortalezcan el acompañamiento y seguimiento de los estudiantes.
+                </p>
+            </div>
+        </div>
+
+        <!-- Valores -->
+        <div class="card">
+            <div class="card-header" style="background: linear-gradient(135deg, #10b981, #059669);">
+                <div class="flex items-center gap-3">
+                    <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="card-title" style="margin: 0; color: white;">Valores</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li class="flex items-center gap-2 mb-2">
+                        <span style="color: #10b981;">•</span>
+                        <span class="text-secondary">Responsabilidad</span>
+                    </li>
+                    <li class="flex items-center gap-2 mb-2">
+                        <span style="color: #10b981;">•</span>
+                        <span class="text-secondary">Confidencialidad</span>
+                    </li>
+                    <li class="flex items-center gap-2 mb-2">
+                        <span style="color: #10b981;">•</span>
+                        <span class="text-secondary">Empatía</span>
+                    </li>
+                    <li class="flex items-center gap-2 mb-2">
+                        <span style="color: #10b981;">•</span>
+                        <span class="text-secondary">Compromiso</span>
+                    </li>
+                    <li class="flex items-center gap-2 mb-2">
+                        <span style="color: #10b981;">•</span>
+                        <span class="text-secondary">Respeto</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <span style="color: #10b981;">•</span>
+                        <span class="text-secondary">Ética profesional</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de información -->
+    <div class="mt-8 text-center">
+        <p class="text-tertiary" style="font-size: 0.875rem;">
+            © 2026 GUIDEX - Sistema de Gestión del Departamento de Orientación<br>
+            Instituto Politécnico Ing. José Delio Guzmán
+        </p>
+    </div>
+</div>
+{% endblock %}

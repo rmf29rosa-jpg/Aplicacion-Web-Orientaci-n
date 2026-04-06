@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Docente{% endblock %}
+{% block page_title %}Inicio{% endblock %}
+{% block page_subtitle %}<p class="page-subtitle">Bienvenido al sistema de orientación estudiantil</p>{% endblock %}
+
+{% block header_actions %}
+<a href="/crear_reporte" class="btn btn-primary">
+    <i data-lucide="plus"></i>
+    <span>Crear Reporte</span>
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="animate-fadeIn">
+    <!-- Encabezado de impresión -->
+    <div class="print-header">
+        <h1>GUIDEX - Sistema de Gestión Orientación & Psicología</h1>
+        <p>Dashboard del Docente</p>
+    </div>
+    
+    <!-- Tarjetas de Estadísticas -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-card-icon primary">
+                    <i data-lucide="file-text"></i>
+                </div>
+            </div>
+            <div class="stat-card-value">{{ reportes|length }}</div>
+            <div class="stat-card-label">Reportes Enviados</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-card-icon warning">
+                    <i data-lucide="clock"></i>
+                </div>
+            </div>
+            <div class="stat-card-value">{{ reportes|selectattr('estado', 'equalto', 'pendiente')|list|length }}</div>
+            <div class="stat-card-label">Pendientes</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-card-icon success">
+                    <i data-lucide="check-circle"></i>
+                </div>
+            </div>
+            <div class="stat-card-value">{{ reportes|selectattr('estado', 'equalto', 'completado')|list|length }}</div>
+            <div class="stat-card-label">Completados</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-card-icon info">
+                    <i data-lucide="users"></i>
+                </div>
+            </div>
+            <div class="stat-card-value">{{ acuerdos|length }}</div>
+            <div class="stat-card-label">Acuerdos</div>
+        </div>
+    </div>
+    
+    <!-- Sección de Acciones Rápidas -->
+    <div class="section">
+        <div class="section-header">
+            <h2 class="section-title">Acciones Rápidas</h2>
+        </div>
+        <div class="actions-grid">
+            <a href="/crear_reporte" class="action-card">
+                <div class="action-card-icon">
+                    <i data-lucide="file-plus"></i>
+                </div>
+                <div class="action-card-content">
+                    <h3 class="action-card-title">Crear Reporte</h3>
+                    <p class="action-card-description">Reporta una situación con un estudiante para atención</p>
+                </div>
+                <div class="action-card-arrow">
+                    <i data-lucide="arrow-right"></i>
+                </div>
+            </a>
+            
+            <a href="/acuerdos" class="action-card">
+                <div class="action-card-icon">
+                    <i data-lucide="file-check"></i>
+                </div>
+                <div class="action-card-content">
+                    <h3 class="action-card-title">Ver Acuerdos</h3>
+                    <p class="action-card-description">Consulta los acuerdos y normas establecidos</p>
+                </div>
+                <div class="action-card-arrow">
+                    <i data-lucide="arrow-right"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Sección de Información -->
+    <div class="section">
+        <div class="section-header">
+            <h2 class="section-title">Información del Sistema</h2>
+        </div>
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-card-header">
+                    <div class="info-card-icon">
+                        <i data-lucide="target"></i>
+                    </div>
+                    <h3 class="info-card-title">¿Cómo funciona?</h3>
+                </div>
+                <div class="info-card-body">
+                    <ul class="info-list">
+                        <li>
+                            <span class="info-list-icon"><i data-lucide="check"></i></span>
+                            <span>Crea un reporte describiendo la situación del estudiante</span>
+                        </li>
+                        <li>
+                            <span class="info-list-icon"><i data-lucide="check"></i></span>
+                            <span>Selecciona la orientadora que debe atender el caso</span>
+                        </li>
+                        <li>
+                            <span class="info-list-icon"><i data-lucide="check"></i></span>
+                            <span>La orientadora recibirá el reporte y tomará acción</span>
+                        </li>
+                        <li>
+                            <span class="info-list-icon"><i data-lucide="check"></i></span>
+                            <span>Recibirás actualizaciones sobre el progreso</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-card-header">
+                    <div class="info-card-icon">
+                        <i data-lucide="lightbulb"></i>
+                    </div>
+                    <h3 class="info-card-title">Consejos</h3>
+                </div>
+                <div class="info-card-body">
+                    <ul class="info-list">
+                        <li>
+                            <span class="info-list-icon"><i data-lucide="check"></i></span>
+                            <span>Sé específico al describir la situación</span>
+                        </li>
+                        <li>
+                            <span class="info-list-icon"><i data-lucide="check"></i></span>
+                            <span>Incluye detalles relevantes del estudiante</span>
+                        </li>
+                        <li>
+                            <span class="info-list-icon"><i data-lucide="check"></i></span>
+                            <span>Selecciona la orientadora adecuada para el caso</span>
+                        </li>
+                        <li>
+                            <span class="info-list-icon"><i data-lucide="check"></i></span>
+                            <span>Revisa periódicamente el estado de tus reportes</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pie de página de impresión -->
+    <div class="print-footer">
+        <p>GUIDEX - Sistema de Gestión Orientación & Psicología | Fecha de impresión: <span id="print-date"></span></p>
+    </div>
+</div>
+
+<script>
+    // Establecer fecha de impresión (usado en caso de impresión)
+    if (document.getElementById('print-date')) {
+        document.getElementById('print-date').textContent = new Date().toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+</script>
+{% endblock %}

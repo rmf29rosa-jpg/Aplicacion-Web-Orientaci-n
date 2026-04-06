@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="GUIDEX - Sistema de Gestión Orientación & Psicología">
+    <title>{% block title %}GUIDEX{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-brand">
+                    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="GUIDEX Logo" class="sidebar-brand-logo">
+                    <span class="sidebar-brand-text">GUIDEX</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                {% if session.get('user_id') %}
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <ul class="nav-list">
+                        {% if session.get('user_rol') == 'docente' %}
+                        <li class="nav-item">
+                            <a href="/inicio_docente" class="nav-link {% if request.endpoint == 'inicio_docente' %}active{% endif %}">
+                                <span class="nav-link-icon"><i data-lucide="home"></i></span>
+                                <span>Inicio</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/crear_reporte" class="nav-link {% if request.endpoint == 'crear_reporte' %}active{% endif %}">
+                                <span class="nav-link-icon"><i data-lucide="file-text"></i></span>
+                                <span>Crear Reporte</span>
+                            </a>
+                        </li>
+                        {% elif session.get('user_rol') == 'orientadora' %}
+                        <li class="nav-item">
+                            <a href="/inicio_orientadora" class="nav-link {% if request.endpoint == 'inicio_orientadora' %}active{% endif %}">
+                                <span class="nav-link-icon"><i data-lucide="home"></i></span>
+                                <span>Inicio</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/ver_reportes" class="nav-link {% if request.endpoint == 'ver_reportes' %}active{% endif %}">
+                                <span class="nav-link-icon"><i data-lucide="clipboard-list"></i></span>
+                                <span>Ver Reportes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/crear_informe" class="nav-link {% if request.endpoint == 'crear_informe' %}active{% endif %}">
+                                <span class="nav-link-icon"><i data-lucide="file-plus"></i></span>
+                                <span>Crear Informe</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">General</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="/acuerdos" class="nav-link {% if request.endpoint == 'acuerdos' %}active{% endif %}">
+                                <span class="nav-link-icon"><i data-lucide="file-check"></i></span>
+                                <span>Acuerdos</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/archivos" class="nav-link {% if request.endpoint == 'archivos' %}active{% endif %}">
+                                <span class="nav-link-icon"><i data-lucide="folder"></i></span>
+                                <span>Archivos</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/acerca" class="nav-link {% if request.endpoint == 'acerca' %}active{% endif %}">
+                                <span class="nav-link-icon"><i data-lucide="info"></i></span>
+                                <span>Acerca de</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                {% endif %}
+            </nav>
+            
+            {% if session.get('user_id') %}
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        {{ session.get('user_nombre', 'U')[0] }}
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name">{{ session.get('user_nombre', 'Usuario') }}</div>
+                        <div class="user-role">{{ session.get('user_rol', 'usuario') }}</div>
+                    </div>
+                    <a href="/logout" class="logout-btn" title="Cerrar sesión">
+                        <i data-lucide="log-out"></i>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </aside>
+        
+        <!-- Contenido Principal -->
+        <main class="main-content">
+            <header class="content-header">
+                <div class="content-header-inner">
+                    <div>
+                        <h1 class="page-title">{% block page_title %}Inicio{% endblock %}</h1>
+                        {% block page_subtitle %}{% endblock %}
+                    </div>
+                    <div class="content-header-actions">
+                        {% block header_actions %}{% endblock %}
+                    </div>
+                </div>
+            </header>
+            
+            <div class="content-body">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    
+    <!-- Inicializar Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

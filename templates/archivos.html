@@ -1,0 +1,861 @@
+{% extends "base.html" %}
+
+{% block title %}Archivos - GUIDEX{% endblock %}
+{% block page_title %}Gestión de Archivos{% endblock %}
+{% block page_subtitle %}Organiza y encuentra todos tus documentos{% endblock %}
+
+{% block extra_css %}
+<style>
+    .archivos-container {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 24px;
+        height: calc(100vh - 140px);
+    }
+    
+    .panel-lateral {
+        background: var(--surface-color);
+        border-radius: 12px;
+        padding: 20px;
+        overflow-y: auto;
+    }
+    
+    .panel-principal {
+        background: var(--surface-color);
+        border-radius: 12px;
+        padding: 20px;
+        overflow-y: auto;
+    }
+    
+    .titulo-seccion {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .categoria-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        margin-bottom: 4px;
+    }
+    
+    .categoria-item:hover {
+        background: var(--hover-color);
+    }
+    
+    .categoria-item.active {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .icono-carpeta {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .carpeta-nombre {
+        flex: 1;
+        font-size: 14px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .badge-cuenta {
+        font-size: 11px;
+        background: var(--bg-color);
+        padding: 2px 6px;
+        border-radius: 10px;
+        color: var(--text-secondary);
+    }
+    
+    .buscador {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .buscador input {
+        width: 100%;
+        padding: 12px 16px 12px 44px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        font-size: 14px;
+        background: var(--bg-color);
+    }
+    
+    .buscador input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+    
+    .buscador-icono {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-secondary);
+    }
+    
+    .filtros-rapidos {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .filtro-chip {
+        padding: 6px 12px;
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .filtro-chip:hover, .filtro-chip.active {
+        background: var(--primary-color);
+        color: white;
+        border-color: var(--primary-color);
+    }
+    
+    .tabs-archivos {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+    }
+    
+    .tab-archivo {
+        padding: 10px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    
+    .tab-archivo:hover {
+        background: var(--hover-color);
+    }
+    
+    .tab-archivo.active {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .lista-archivos {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .archivo-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        background: var(--bg-color);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+    
+    .archivo-item:hover {
+        border-color: var(--primary-color);
+        transform: translateX(4px);
+    }
+    
+    .archivo-icono {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+    }
+    
+    .archivo-icono.acuerdo { background: #d1fae5; color: #059669; }
+    .archivo-icono.informe { background: #dbeafe; color: #2563eb; }
+    .archivo-icono.reporte { background: #fee2e2; color: #dc2626; }
+    .archivo-icono.general { background: #e5e7eb; color: #374151; }
+    
+    .archivo-info {
+        flex: 1;
+    }
+    
+    .archivo-nombre {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
+    
+    .archivo-meta {
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+    
+    .archivo-tags {
+        display: flex;
+        gap: 4px;
+    }
+    
+    .tag {
+        padding: 2px 8px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 10px;
+        font-size: 11px;
+    }
+    
+    .archivo-acciones {
+        display: flex;
+        gap: 4px;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    
+    .archivo-item:hover .archivo-acciones {
+        opacity: 1;
+    }
+    
+    .btn-icono {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: none;
+        background: var(--surface-color);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+    
+    .btn-icono:hover {
+        background: var(--hover-color);
+    }
+    
+    .btn-icono.primario {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal.mostrar {
+        display: flex;
+    }
+    
+    .modal-contenido {
+        background: var(--surface-color);
+        border-radius: 16px;
+        padding: 24px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    
+    .modal-titulo {
+        font-size: 18px;
+        font-weight: 600;
+    }
+    
+    .modal-cerrar {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .form-group {
+        margin-bottom: 16px;
+    }
+    
+    .form-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        margin-bottom: 6px;
+    }
+    
+    .form-input, .form-select, .form-textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 14px;
+        background: var(--bg-color);
+    }
+    
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+    }
+    
+    .form-textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    
+    .form-botones {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-secundario {
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+    }
+    
+    .btn-primario {
+        background: var(--primary-color);
+        border: none;
+        color: white;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .stat-card {
+        background: var(--bg-color);
+        padding: 16px;
+        border-radius: 12px;
+    }
+    
+    .stat-numero {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+    
+    .stat-label {
+        font-size: 13px;
+        color: var(--text-secondary);
+    }
+    
+    .resultados-busqueda {
+        margin-top: 20px;
+    }
+    
+    .resultado-item {
+        padding: 12px;
+        background: var(--bg-color);
+        border-radius: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .no-resultados {
+        text-align: center;
+        padding: 40px;
+        color: var(--text-secondary);
+    }
+    
+    @media (max-width: 1024px) {
+        .archivos-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .panel-lateral {
+            display: none;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="archivos-container">
+    <!-- Panel Lateral: Estructura de carpetas -->
+    <aside class="panel-lateral">
+        <div class="titulo-seccion">Categorías</div>
+        
+        {% for tipo, carpetas in categorias.items() %}
+        <div class="categoria-grupo" style="margin-bottom: 16px;">
+            <div class="categoria-item" onclick="filtrarPorCategoria('{{ tipo }}')">
+                <span class="icono-carpeta">
+                    {% if tipo == 'acuerdos' %}📋{% elif tipo == 'informes' %}📊{% elif tipo == 'reportes' %}📝{% else %}📁{% endif %}
+                </span>
+                <span class="carpeta-nombre">{{ tipo|title }}</span>
+                <span class="badge-cuenta">{{ por_tipo[tipo] if por_tipo[tipo] else 0 }}</span>
+            </div>
+            
+            {% for carpeta in carpetas %}
+            <div class="categoria-item" style="padding-left: 24px;" onclick="verCarpeta({{ carpeta.id }})">
+                <span class="icono-carpeta" style="color: {{ carpeta.color }};">📂</span>
+                <span class="carpeta-nombre">{{ carpeta.nombre }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        
+        <button class="btn btn-primario" style="width: 100%; margin-top: 16px;" onclick="abrirModalNuevaCarpeta()">
+            <i data-lucide="folder-plus"></i> Nueva Carpeta
+        </button>
+    </aside>
+    
+    <!-- Panel Principal -->
+    <main class="panel-principal">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-numero">{{ stats.total_archivos }}</div>
+                <div class="stat-label">Total Archivos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-numero">{{ stats.total_carpetas }}</div>
+                <div class="stat-label">Carpetas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-numero">{{ por_tipo['acuerdo'] if por_tipo['acuerdo'] else 0 }}</div>
+                <div class="stat-label">Acuerdos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-numero">{{ por_tipo['informe'] if por_tipo['informe'] else 0 }}</div>
+                <div class="stat-label">Informes</div>
+            </div>
+        </div>
+        
+        <!-- Buscador -->
+        <div class="buscador">
+            <span class="buscador-icono"><i data-lucide="search"></i></span>
+            <input type="text" id="busqueda-input" placeholder="Buscar archivos por nombre, contenido o tags..." oninput="buscarArchivos()">
+        </div>
+        
+        <!-- Filtros rápidos -->
+        <div class="filtros-rapidos">
+            <button class="filtro-chip active" onclick="filtrarPorTipo('')">Todos</button>
+            <button class="filtro-chip" onclick="filtrarPorTipo('acuerdo')">Acuerdos</button>
+            <button class="filtro-chip" onclick="filtrarPorTipo('informe')">Informes</button>
+            <button class="filtro-chip" onclick="filtrarPorTipo('reporte')">Reportes</button>
+            <button class="filtro-chip" onclick="filtrarPorTipo('general')">General</button>
+        </div>
+        
+        <!-- Fechas -->
+        <div class="filtros-rapidos">
+            <label style="font-size: 13px; color: var(--text-secondary);">Desde:</label>
+            <input type="date" id="fecha-desde" style="padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 6px;" onchange="buscarArchivos()">
+            <label style="font-size: 13px; color: var(--text-secondary);">Hasta:</label>
+            <input type="date" id="fecha-hasta" style="padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 6px;" onchange="buscarArchivos()">
+        </div>
+        
+        <!-- Resultados -->
+        <div id="resultados-container">
+            <div class="titulo-seccion">Archivos Recientes</div>
+            
+            {% if archivos %}
+            <div class="lista-archivos">
+                {% for archivo in archivos %}
+                <div class="archivo-item" onclick="verArchivo({{ archivo.id }})">
+                    <div class="archivo-icono {{ archivo.tipo_documento }}">
+                        {% if archivo.tipo_documento == 'acuerdo' %}📋{% elif archivo.tipo_documento == 'informe' %}📊{% elif archivo.tipo_documento == 'reporte' %}📝{% else %}📄{% endif %}
+                    </div>
+                    <div class="archivo-info">
+                        <div class="archivo-nombre">{{ archivo.nombre }}</div>
+                        <div class="archivo-meta">
+                            {{ archivo.carpeta_nombre or 'Sin carpeta' }} • {{ archivo.fecha_creacion[:10] }}
+                        </div>
+                        {% if archivo.tags %}
+                        <div class="archivo-tags">
+                            {% for tag in archivo.tags.split(',') %}
+                            <span class="tag">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="archivo-acciones">
+                        <button class="btn-icono" onclick="event.stopPropagation(); moverArchivo({{ archivo.id }})" title="Mover">
+                            <i data-lucide="folder-input"></i>
+                        </button>
+                        <button class="btn-icono" onclick="event.stopPropagation(); editarArchivo({{ archivo.id }})" title="Editar">
+                            <i data-lucide="edit"></i>
+                        </button>
+                        <button class="btn-icono" onclick="event.stopPropagation(); eliminarArchivo({{ archivo.id }})" title="Eliminar">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-resultados">
+                <i data-lucide="folder-open" style="width: 48px; height: 48px; margin-bottom: 12px;"></i>
+                <p>No hay archivos aún</p>
+                <p style="font-size: 13px;">Crea tu primer archivo o importa documentos del sistema</p>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<!-- Modal: Nueva Carpeta -->
+<div id="modal-nueva-carpeta" class="modal">
+    <div class="modal-contenido">
+        <div class="modal-header">
+            <span class="modal-titulo">Nueva Carpeta</span>
+            <button class="modal-cerrar" onclick="cerrarModal('modal-nueva-carpeta')">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <form onsubmit="crearCarpeta(event)">
+            <div class="form-group">
+                <label class="form-label">Nombre de la carpeta</label>
+                <input type="text" id="nombre-carpeta" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Categoría</label>
+                <select id="tipo-carpeta" class="form-select">
+                    <option value="general">General</option>
+                    <option value="acuerdos">Acuerdos</option>
+                    <option value="informes">Informes</option>
+                    <option value="reportes">Reportes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Color</label>
+                <input type="color" id="color-carpeta" class="form-input" value="#6366f1" style="height: 40px;">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Carpeta padre (opcional)</label>
+                <select id="parent-carpeta" class="form-select">
+                    <option value="">Ninguna (raíz)</option>
+                    {% for tipo, carpetas in categorias.items() %}
+                    {% for carpeta in carpetas %}
+                    <option value="{{ carpeta.id }}">{{ carpeta.nombre }}</option>
+                    {% endfor %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-botones">
+                <button type="button" class="btn btn-secundario" onclick="cerrarModal('modal-nueva-carpeta')">Cancelar</button>
+                <button type="submit" class="btn btn-primario">Crear Carpeta</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Mover Archivo -->
+<div id="modal-mover-archivo" class="modal">
+    <div class="modal-contenido">
+        <div class="modal-header">
+            <span class="modal-titulo">Mover Archivo</span>
+            <button class="modal-cerrar" onclick="cerrarModal('modal-mover-archivo')">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Seleccionar carpeta de destino</label>
+            <select id="carpeta-destino" class="form-select">
+                <option value="">Raíz (sin carpeta)</option>
+                {% for tipo, carpetas in categorias.items() %}
+                <option disabled style="font-weight: 600;">--- {{ tipo|title }} ---</option>
+                {% for carpeta in carpetas %}
+                <option value="{{ carpeta.id }}">📂 {{ carpeta.nombre }}</option>
+                {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+        <input type="hidden" id="archivo-id-mover">
+        <div class="form-botones">
+            <button type="button" class="btn btn-secundario" onclick="cerrarModal('modal-mover-archivo')">Cancelar</button>
+            <button type="button" class="btn btn-primario" onclick="confirmarMoverArchivo()">Mover</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Ver Archivo -->
+<div id="modal-ver-archivo" class="modal">
+    <div class="modal-contenido" style="max-width: 700px;">
+        <div class="modal-header">
+            <span class="modal-titulo" id="ver-archivo-nombre">Archivo</span>
+            <button class="modal-cerrar" onclick="cerrarModal('modal-ver-archivo')">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div id="ver-archivo-contenido" style="white-space: pre-wrap; background: var(--bg-color); padding: 16px; border-radius: 8px; max-height: 300px; overflow-y: auto;"></div>
+        
+        <div style="margin-top: 16px;">
+            <label class="form-label">Tags</label>
+            <div id="ver-archivo-tags" class="archivo-tags"></div>
+        </div>
+        
+        <div style="margin-top: 16px; font-size: 13px; color: var(--text-secondary);">
+            <p>Creado: <span id="ver-archivo-fecha-creacion"></span></p>
+            <p>Última modificación: <span id="ver-archivo-fecha-modificacion"></span></p>
+        </div>
+        
+        <div class="form-botones">
+            <button type="button" class="btn btn-secundario" onclick="cerrarModal('modal-ver-archivo')">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Buscar Avanzada Results -->
+<div id="modal-resultados-busqueda" class="modal">
+    <div class="modal-contenido" style="max-width: 700px;">
+        <div class="modal-header">
+            <span class="modal-titulo">Resultados de Búsqueda</span>
+            <button class="modal-cerrar" onclick="cerrarModal('modal-resultados-busqueda')">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div id="resultados-busqueda-lista"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let tipoFiltroActual = '';
+    
+    function filtrarPorCategoria(categoria) {
+        tipoFiltroActual = categoria;
+        buscarArchivos();
+    }
+    
+    function filtrarPorTipo(tipo) {
+        tipoFiltroActual = tipo;
+        document.querySelectorAll('.filtro-chip').forEach(chip => chip.classList.remove('active'));
+        event.target.classList.add('active');
+        buscarArchivos();
+    }
+    
+    function buscarArchivos() {
+        const query = document.getElementById('busqueda-input').value;
+        const fechaDesde = document.getElementById('fecha-desde').value;
+        const fechaHasta = document.getElementById('fecha-hasta').value;
+        
+        let url = `/api/archivos/buscar?q=${encodeURIComponent(query)}&tipo=${tipoFiltroActual}`;
+        if (fechaDesde) url += `&fecha_desde=${fechaDesde}`;
+        if (fechaHasta) url += `&fecha_hasta=${fechaHasta}`;
+        
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarResultados(data.archivos);
+                }
+            });
+    }
+    
+    function mostrarResultados(archivos) {
+        const container = document.getElementById('resultados-container');
+        
+        if (archivos.length === 0) {
+            container.innerHTML = `
+                <div class="no-resultados">
+                    <i data-lucide="search-x" style="width: 48px; height: 48px; margin-bottom: 12px;"></i>
+                    <p>No se encontraron archivos</p>
+                </div>
+            `;
+            lucide.createIcons();
+            return;
+        }
+        
+        let html = `<div class="titulo-seccion">${archivos.length} resultado(s) encontrado(s)</div>`;
+        html += '<div class="lista-archivos">';
+        
+        archivos.forEach(archivo => {
+            const iconMap = { 'acuerdo': '📋', 'informe': '📊', 'reporte': '📝', 'general': '📄' };
+            const tipoClase = archivo.tipo_documento;
+            
+            html += `
+                <div class="archivo-item" onclick="verArchivo(${archivo.id})">
+                    <div class="archivo-icono ${tipoClase}">${iconMap[tipoClase] || '📄'}</div>
+                    <div class="archivo-info">
+                        <div class="archivo-nombre">${archivo.nombre}</div>
+                        <div class="archivo-meta">
+                            ${archivo.carpeta_nombre || 'Sin carpeta'} • ${archivo.fecha_creacion ? archivo.fecha_creacion.substring(0, 10) : ''}
+                        </div>
+                        ${archivo.tags ? `<div class="archivo-tags">${archivo.tags.split(',').map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
+                    </div>
+                    <div class="archivo-acciones">
+                        <button class="btn-icono" onclick="event.stopPropagation(); moverArchivo(${archivo.id})" title="Mover">
+                            <i data-lucide="folder-input"></i>
+                        </button>
+                        <button class="btn-icono" onclick="event.stopPropagation(); eliminarArchivo(${archivo.id})" title="Eliminar">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+        lucide.createIcons();
+    }
+    
+    function verArchivo(id) {
+        fetch(`/api/archivos/${id}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const archivo = data.archivo;
+                    document.getElementById('ver-archivo-nombre').textContent = archivo.nombre;
+                    document.getElementById('ver-archivo-contenido').textContent = archivo.contenido || 'Sin contenido';
+                    document.getElementById('ver-archivo-tags').innerHTML = archivo.tags ? 
+                        archivo.tags.split(',').map(t => `<span class="tag">${t}</span>`).join('') : 'Sin tags';
+                    document.getElementById('ver-archivo-fecha-creacion').textContent = archivo.fecha_creacion || '';
+                    document.getElementById('ver-archivo-fecha-modificacion').textContent = archivo.fecha_modificacion || '';
+                    abrirModal('modal-ver-archivo');
+                }
+            });
+    }
+    
+    function moverArchivo(id) {
+        document.getElementById('archivo-id-mover').value = id;
+        abrirModal('modal-mover-archivo');
+    }
+    
+    function confirmarMoverArchivo() {
+        const id = document.getElementById('archivo-id-mover').value;
+        const carpetaId = document.getElementById('carpeta-destino').value || null;
+        
+        fetch(`/api/archivos/${id}/mover`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ carpeta_id: carpetaId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                cerrarModal('modal-mover-archivo');
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    }
+    
+    function eliminarArchivo(id) {
+        if (confirm('¿Estás seguro de que deseas eliminar este archivo?')) {
+            fetch(`/api/archivos/${id}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                });
+        }
+    }
+    
+    function abrirModalNuevaCarpeta() {
+        abrirModal('modal-nueva-carpeta');
+    }
+    
+    function crearCarpeta(e) {
+        e.preventDefault();
+        
+        const nombre = document.getElementById('nombre-carpeta').value;
+        const tipo = document.getElementById('tipo-carpeta').value;
+        const color = document.getElementById('color-carpeta').value;
+        const parentId = document.getElementById('parent-carpeta').value || null;
+        
+        fetch('/api/carpetas/crear', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nombre: nombre,
+                tipo_categoria: tipo,
+                color: color,
+                parent_id: parentId
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                cerrarModal('modal-nueva-carpeta');
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        });
+    }
+    
+    function verCarpeta(id) {
+        fetch(`/api/carpetas/${id}/archivos`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    mostrarResultados(data.archivos);
+                }
+            });
+    }
+    
+    function abrirModal(id) {
+        document.getElementById(id).classList.add('mostrar');
+    }
+    
+    function cerrarModal(id) {
+        document.getElementById(id).classList.remove('mostrar');
+    }
+    
+    // Cerrar modal al hacer clic fuera
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('mostrar');
+            }
+        });
+    });
+</script>
+{% endblock %}

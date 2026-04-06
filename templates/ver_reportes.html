@@ -1,0 +1,483 @@
+{% extends "base.html" %}
+
+{% block title %}Ver Reportes - GUIDEX{% endblock %}
+
+{% block content %}
+<div class="main-container animate-fadeIn">
+    <!-- Encabezado de impresión -->
+    <div class="print-header">
+        <div class="print-header-content">
+            <img src="{{ url_for('static', filename='img/logo.png') }}" alt="GUIDEX" class="print-header-logo">
+            <div>
+                <h1 class="print-header-title">GUIDEX</h1>
+                <p class="print-header-subtitle">Sistema de Gestión Orientación & Psicología</p>
+            </div>
+        </div>
+        <p class="print-header-subtitle">Reportes de Orientación</p>
+        <p class="print-header-date">Fecha de impresión: <span id="print-date"></span></p>
+    </div>
+    
+    <!-- Área imprimible -->
+    <div class="print-area">
+    <!-- Encabezado -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-primary">Reportes</h1>
+            <p class="text-secondary mt-2">Visualice y gestione los reportes de orientación</p>
+        </div>
+        <div class="flex gap-3 no-print">
+            <button onclick="window.print()" class="btn-print">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                Imprimir
+            </button>
+            {% if session.get('user_rol') == 'docente' %}
+            <a href="{{ url_for('crear_reporte') }}" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Nuevo Reporte
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="card mb-6 no-print">
+        <div class="card-body">
+            <div class="flex gap-4 items-center flex-wrap">
+                <div class="form-group mb-0">
+                    <label for="filtro_estado" class="form-label mb-1">Filtrar por Estado</label>
+                    <select id="filtro_estado" class="form-select" style="width: 200px;">
+                        <option value="">Todos</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en_proceso">En Proceso</option>
+                        <option value="completado">Completado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <div class="form-group mb-0">
+                    <label for="filtro_grado" class="form-label mb-1">Filtrar por Área</label>
+                    <select id="filtro_grado" class="form-select" style="width: 200px;">
+                        <option value="">Todos</option>
+                        <option value="Informática">Informática</option>
+                        <option value="Logística">Logística</option>
+                        <option value="Mecánica">Mecánica</option>
+                        <option value="Electrónica">Electrónica</option>
+                        <option value="Electricidad">Electricidad</option>
+                    </select>
+                </div>
+                <div class="form-group mb-0">
+                    <label for="buscar" class="form-label mb-1">Buscar</label>
+                    <input type="text" id="buscar" class="form-input" placeholder="Buscar por estudiante..." style="width: 250px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Lista de Reportes -->
+    {% if reportes %}
+    <div class="grid gap-4" id="lista-reportes">
+        {% for reporte in reportes %}
+        <div class="card reporte-card" data-estado="{{ reporte.estado }}" data-grado="{{ reporte.estudiante_grado }}">
+            <div class="card-body">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h3 class="text-xl font-semibold text-primary">{{ reporte.estudiante_nombre }}</h3>
+                            <span class="badge badge-{{ reporte.estado }}">
+                                {{ reporte.estado | replace('_', ' ') | title }}
+                            </span>
+                        </div>
+                        <p class="text-secondary text-sm mb-3">{{ reporte.motivo }}</p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-4 gap-4 text-sm mb-4">
+                    <div>
+                        <span class="font-semibold text-primary">Área:</span>
+                        <p class="text-secondary">{{ reporte.estudiante_grado }}</p>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-primary">Sección:</span>
+                        <p class="text-secondary">{{ reporte.estudiante_seccion }}</p>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-primary">Fecha:</span>
+                        <p class="text-secondary">{{ reporte.fecha_creacion }}</p>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-primary">
+                            {% if session.get('user_rol') == 'docente' %}Orientadora:{% else %}Docente:{% endif %}
+                        </span>
+                        <p class="text-secondary">
+                            {% if session.get('user_rol') == 'docente' %}
+                                {{ reporte.orientadora_nombre }}
+                            {% else %}
+                                {{ reporte.docente_nombre }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <span class="font-semibold text-primary">Descripción:</span>
+                    <p class="text-secondary mt-1">{{ reporte.descripcion }}</p>
+                </div>
+                
+                {% if reporte.observaciones %}
+                <div class="mb-4">
+                    <span class="font-semibold text-primary">Observaciones:</span>
+                    <p class="text-secondary mt-1">{{ reporte.observaciones }}</p>
+                </div>
+                {% endif %}
+                
+                <!-- Acciones -->
+                <div class="flex gap-2 mt-4 pt-4 border-t border-gray-200 no-print">
+                    {% if session.get('user_rol') == 'orientadora' %}
+                    <button onclick="actualizarEstado('{{ reporte.id }}', 'en_proceso')" 
+                            class="btn btn-secondary btn-sm {% if reporte.estado == 'en_proceso' %}opacity-50{% endif %}"
+                            {% if reporte.estado == 'en_proceso' %}disabled{% endif %}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        En Proceso
+                    </button>
+                    <button onclick="actualizarEstado('{{ reporte.id }}', 'completado')" 
+                            class="btn btn-success btn-sm {% if reporte.estado == 'completado' %}opacity-50{% endif %}"
+                            {% if reporte.estado == 'completado' %}disabled{% endif %}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Completado
+                    </button>
+                    {% endif %}
+                    <button onclick="verDetalle('{{ reporte.id }}')" class="btn btn-primary btn-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Ver Detalle
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="card-body text-center py-12">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4 text-tertiary">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <h3 class="text-xl font-semibold text-primary mb-2">No hay reportes registrados</h3>
+            <p class="text-secondary mb-4">
+                {% if session.get('user_rol') == 'docente' %}
+                Comience creando un nuevo reporte para documentar situaciones de sus estudiantes.
+                {% else %}
+                No hay reportes asignados a su perfil en este momento.
+                {% endif %}
+            </p>
+            {% if session.get('user_rol') == 'docente' %}
+            <a href="{{ url_for('crear_reporte') }}" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Crear Primer Reporte
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Modal de Detalle -->
+    <div id="modal-detalle" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Detalle del Reporte</h2>
+                <button onclick="cerrarModal()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body-content">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+    </div>
+    
+    <!-- Pie de página de impresión -->
+    <div class="print-footer">
+        <p>GUIDEX - Sistema de Gestión Orientación & Psicología | Fecha de impresión: <span id="print-date"></span></p>
+    </div>
+</div>
+
+<style>
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+    
+    .modal.hidden {
+        display: none;
+    }
+    
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .modal-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1e3a5f;
+    }
+    
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #6b7280;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+</style>
+
+<script>
+    // Establecer fecha de impresión
+    document.getElementById('print-date').textContent = new Date().toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    // Filtrar reportes
+    function filtrarReportes() {
+        const estado = document.getElementById('filtro_estado').value;
+        const grado = document.getElementById('filtro_grado').value;
+        const busqueda = document.getElementById('buscar').value.toLowerCase();
+        
+        const cards = document.querySelectorAll('.reporte-card');
+        
+        cards.forEach(card => {
+            const cardEstado = card.dataset.estado;
+            const cardGrado = card.dataset.grado;
+            const cardText = card.textContent.toLowerCase();
+            
+            let mostrar = true;
+            
+            if (estado && cardEstado !== estado) {
+                mostrar = false;
+            }
+            
+            if (grado && cardGrado !== grado) {
+                mostrar = false;
+            }
+            
+            if (busqueda && !cardText.includes(busqueda)) {
+                mostrar = false;
+            }
+            
+            card.style.display = mostrar ? 'block' : 'none';
+        });
+    }
+    
+    // Event listeners para filtros
+    document.getElementById('filtro_estado').addEventListener('change', filtrarReportes);
+    document.getElementById('filtro_grado').addEventListener('change', filtrarReportes);
+    document.getElementById('buscar').addEventListener('input', filtrarReportes);
+    
+    // Actualizar estado del reporte
+    function actualizarEstado(id, estado) {
+        fetch(`/actualizar_estado_reporte/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ estado: estado })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error al actualizar el estado');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al actualizar el estado');
+        });
+    }
+    
+    // Ver detalle del reporte
+    function verDetalle(id) {
+        fetch(`/obtener_reporte/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const reporte = data.reporte;
+                const evidencias = data.evidencias || [];
+                
+                // Generar HTML de evidencias
+                let evidenciasHtml = '';
+                if (evidencias.length > 0) {
+                    evidenciasHtml = `
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <h4 class="font-semibold text-primary mb-3">Evidencias Adjuntas (${evidencias.length})</h4>
+                            <div class="grid grid-2 gap-3">
+                                ${evidencias.map(ev => {
+                                    let contenido = '';
+                                    if (ev.tipo === 'imagen') {
+                                        contenido = `
+                                            <div class="evidencia-item p-2 border rounded">
+                                                <img src="/uploads/${ev.nombre_archivo}" alt="${ev.nombre_original}" class="w-full h-32 object-cover rounded mb-2" onclick="window.open('/uploads/${ev.nombre_archivo}', '_blank')">
+                                                <p class="text-xs text-secondary truncate">${ev.nombre_original}</p>
+                                                <div class="flex gap-2 mt-2">
+                                                    <a href="/uploads/${ev.nombre_archivo}" download="${ev.nombre_original}" class="text-primary text-xs hover:underline">Descargar</a>
+                                                </div>
+                                            </div>
+                                        `;
+                                    } else if (ev.tipo === 'documento') {
+                                        const icon = ev.nombre_original.toLowerCase().endsWith('.pdf') ? '📄' : '📝';
+                                        contenido = `
+                                            <div class="evidencia-item p-2 border rounded flex items-center gap-3">
+                                                <span class="text-2xl">${icon}</span>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-sm font-medium truncate">${ev.nombre_original}</p>
+                                                    <p class="text-xs text-tertiary">${(ev.tamano / 1024).toFixed(1)} KB</p>
+                                                </div>
+                                                <a href="/uploads/${ev.nombre_archivo}" download="${ev.nombre_original}" class="btn btn-sm btn-secondary">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                        <polyline points="7 10 12 15 17 10"></polyline>
+                                                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        `;
+                                    } else if (ev.tipo === 'video') {
+                                        contenido = `
+                                            <div class="evidencia-item p-2 border rounded">
+                                                <div class="bg-gray-100 rounded mb-2 p-4 text-center">
+                                                    <span class="text-2xl">🎬</span>
+                                                    <p class="text-xs text-secondary mt-1">${ev.nombre_original}</p>
+                                                </div>
+                                                <video controls class="w-full rounded">
+                                                    <source src="/uploads/${ev.nombre_archivo}" type="video/mp4">
+                                                    Tu navegador no soporta videos
+                                                </video>
+                                            </div>
+                                        `;
+                                    }
+                                    return contenido;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                const contenido = `
+                    <div class="space-y-4">
+                        <div>
+                            <span class="font-semibold text-primary">Estudiante:</span>
+                            <p class="text-secondary">${reporte.estudiante_nombre}</p>
+                        </div>
+                        <div class="grid grid-2 gap-4">
+                            <div>
+                                <span class="font-semibold text-primary">Área:</span>
+                                <p class="text-secondary">${reporte.estudiante_grado}</p>
+                            </div>
+                            <div>
+                                <span class="font-semibold text-primary">Sección:</span>
+                                <p class="text-secondary">${reporte.estudiante_seccion}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-primary">Motivo:</span>
+                            <p class="text-secondary">${reporte.motivo}</p>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-primary">Descripción:</span>
+                            <p class="text-secondary">${reporte.descripcion}</p>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-primary">Estado:</span>
+                            <span class="badge badge-${reporte.estado}">${reporte.estado.replace('_', ' ').toUpperCase()}</span>
+                        </div>
+                        <div>
+                            <span class="font-semibold text-primary">Fecha de Creación:</span>
+                            <p class="text-secondary">${reporte.fecha_creacion}</p>
+                        </div>
+                        ${reporte.observaciones ? `
+                        <div>
+                            <span class="font-semibold text-primary">Observaciones:</span>
+                            <p class="text-secondary">${reporte.observaciones}</p>
+                        </div>
+                        ` : ''}
+                        ${evidenciasHtml}
+                    </div>
+                `;
+                document.getElementById('modal-body-content').innerHTML = contenido;
+                document.getElementById('modal-detalle').classList.remove('hidden');
+            } else {
+                alert('Error al obtener el reporte');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al obtener el reporte');
+        });
+    }
+    
+    // Cerrar modal
+    function cerrarModal() {
+        document.getElementById('modal-detalle').classList.add('hidden');
+    }
+    
+    // Cerrar modal al hacer clic fuera
+    document.getElementById('modal-detalle').addEventListener('click', function(e) {
+        if (e.target === this) {
+            cerrarModal();
+        }
+    });
+</script>
+{% endblock %}

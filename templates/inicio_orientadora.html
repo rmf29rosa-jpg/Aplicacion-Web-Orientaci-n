@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Orientadora{% endblock %}
+{% block page_title %}Inicio{% endblock %}
+{% block page_subtitle %}<p class="page-subtitle">Gestiona los reportes y crea informes para los estudiantes</p>{% endblock %}
+
+{% block header_actions %}
+<a href="/crear_informe" class="btn btn-primary">
+    <i data-lucide="plus"></i>
+    <span>Crear Informe</span>
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="animate-fadeIn">
+    <!-- Encabezado de impresión -->
+    <div class="print-header">
+        <h1>GUIDEX - Sistema de Gestión Orientación & Psicología</h1>
+        <p>Dashboard de la Orientadora</p>
+    </div>
+    
+    <!-- Tarjetas de Estadísticas -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-card-icon primary">
+                    <i data-lucide="clipboard-list"></i>
+                </div>
+            </div>
+            <div class="stat-card-value">{{ reportes|length }}</div>
+            <div class="stat-card-label">Reportes Asignados</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-card-icon warning">
+                    <i data-lucide="clock"></i>
+                </div>
+            </div>
+            <div class="stat-card-value">{{ reportes|selectattr('estado', 'equalto', 'pendiente')|list|length }}</div>
+            <div class="stat-card-label">Pendientes</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-card-icon success">
+                    <i data-lucide="check-circle"></i>
+                </div>
+            </div>
+            <div class="stat-card-value">{{ reportes|selectattr('estado', 'equalto', 'completado')|list|length }}</div>
+            <div class="stat-card-label">Completados</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-card-header">
+                <div class="stat-card-icon info">
+                    <i data-lucide="file-text"></i>
+                </div>
+            </div>
+            <div class="stat-card-value">{{ informes|length }}</div>
+            <div class="stat-card-label">Informes Creados</div>
+        </div>
+    </div>
+    
+    <!-- Sección de Acciones Rápidas -->
+    <div class="section">
+        <div class="section-header">
+            <h2 class="section-title">Acciones Rápidas</h2>
+        </div>
+        <div class="actions-grid">
+            <a href="/ver_reportes" class="action-card">
+                <div class="action-card-icon">
+                    <i data-lucide="clipboard-list"></i>
+                </div>
+                <div class="action-card-content">
+                    <h3 class="action-card-title">Ver Reportes</h3>
+                    <p class="action-card-description">Revisa los reportes asignados a ti</p>
+                </div>
+                <div class="action-card-arrow">
+                    <i data-lucide="arrow-right"></i>
+                </div>
+            </a>
+            
+            <a href="/crear_informe" class="action-card">
+                <div class="action-card-icon">
+                    <i data-lucide="file-plus"></i>
+                </div>
+                <div class="action-card-content">
+                    <h3 class="action-card-title">Crear Informe</h3>
+                    <p class="action-card-description">Crea un nuevo informe de orientación</p>
+                </div>
+                <div class="action-card-arrow">
+                    <i data-lucide="arrow-right"></i>
+                </div>
+            </a>
+            
+            <a href="/acuerdos" class="action-card">
+                <div class="action-card-icon">
+                    <i data-lucide="file-check"></i>
+                </div>
+                <div class="action-card-content">
+                    <h3 class="action-card-title">Ver Acuerdos</h3>
+                    <p class="action-card-description">Consulta los acuerdos establecidos</p>
+                </div>
+                <div class="action-card-arrow">
+                    <i data-lucide="arrow-right"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Sección de Flujo de Trabajo -->
+    <div class="section">
+        <div class="section-header">
+            <h2 class="section-title">Flujo de Trabajo</h2>
+        </div>
+        <div class="workflow-grid">
+            <div class="workflow-card">
+                <div class="workflow-number">1</div>
+                <h3 class="workflow-title">Recibir Reportes</h3>
+                <p class="workflow-description">Los docentes envían reportes sobre situaciones de estudiantes</p>
+            </div>
+            
+            <div class="workflow-card">
+                <div class="workflow-number">2</div>
+                <h3 class="workflow-title">Revisar y Analizar</h3>
+                <p class="workflow-description">Analiza cada reporte y determina la mejor estrategia</p>
+            </div>
+            
+            <div class="workflow-card">
+                <div class="workflow-number">3</div>
+                <h3 class="workflow-title">Crear Informes</h3>
+                <p class="workflow-description">Documenta tus intervenciones y crea informes detallados</p>
+            </div>
+            
+            <div class="workflow-card">
+                <div class="workflow-number">4</div>
+                <h3 class="workflow-title">Seguimiento</h3>
+                <p class="workflow-description">Realiza seguimiento a los casos y actualiza su estado</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pie de página de impresión -->
+    <div class="print-footer">
+        <p>GUIDEX - Sistema de Gestión Orientación & Psicología | Fecha de impresión: <span id="print-date"></span></p>
+    </div>
+</div>
+
+<script>
+    // Establecer fecha de impresión (usado en caso de impresión)
+    if (document.getElementById('print-date')) {
+        document.getElementById('print-date').textContent = new Date().toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+</script>
+{% endblock %}

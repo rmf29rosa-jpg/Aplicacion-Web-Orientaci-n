@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Acuerdo - GUIDEX{% endblock %}
+
+{% block content %}
+<div class="main-container animate-fadeIn">
+    <!-- Encabezado de impresión -->
+    <div class="print-header">
+        <h1>GUIDEX - Sistema de Gestión Orientación & Psicología</h1>
+        <p>Acuerdo y Compromiso</p>
+    </div>
+    
+    <!-- Encabezado -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-primary">Editar Acuerdo</h1>
+            <p class="text-secondary mt-2">Modifique los datos del acuerdo</p>
+        </div>
+        <button onclick="window.print()" class="btn-print no-print">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            Imprimir
+        </button>
+    </div>
+    
+    <!-- Formulario -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Formulario de Acuerdo</h2>
+            <p class="card-subtitle">Modifique los campos necesarios</p>
+        </div>
+        
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('editar_acuerdo', id=acuerdo.id) }}">
+                <!-- Información del Acuerdo -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-4 text-primary">Información del Acuerdo</h3>
+                    
+                    <div class="grid grid-2 gap-4">
+                        <div class="form-group">
+                            <label for="titulo" class="form-label">Título del Acuerdo</label>
+                            <input type="text" id="titulo" name="titulo" class="form-input" value="{{ acuerdo.titulo }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="tipo_acuerdo" class="form-label">Tipo de Acuerdo</label>
+                            <select id="tipo_acuerdo" name="tipo_acuerdo" class="form-select" required>
+                                <option value="">Seleccionar tipo</option>
+                                <option value="academico" {% if acuerdo.tipo_acuerdo == 'academico' %}selected{% endif %}>Académico</option>
+                                <option value="conductual" {% if acuerdo.tipo_acuerdo == 'conductual' %}selected{% endif %}>Conductual</option>
+                                <option value="emocional" {% if acuerdo.tipo_acuerdo == 'emocional' %}selected{% endif %}>Emocional</option>
+                                <option value="familiar" {% if acuerdo.tipo_acuerdo == 'familiar' %}selected{% endif %}>Familiar</option>
+                                <option value="otro" {% if acuerdo.tipo_acuerdo == 'otro' %}selected{% endif %}>Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mt-4">
+                        <label for="descripcion" class="form-label">Descripción del Acuerdo</label>
+                        <textarea id="descripcion" name="descripcion" class="form-textarea" rows="6" required>{{ acuerdo.descripcion }}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="descripcion" class="form-label">Descripción del Acuerdo</label>
+                        <textarea id="descripcion" name="descripcion" class="form-textarea" rows="6" required>{{ acuerdo.descripcion }}</textarea>
+                    </div>
+                    
+                    <div class="grid grid-2 gap-4">
+                        <div class="form-group">
+                            <label for="fecha_limite" class="form-label">Fecha Límite (opcional)</label>
+                            <input type="date" id="fecha_limite" name="fecha_limite" class="form-input" value="{{ acuerdo.fecha_limite }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select id="estado" name="estado" class="form-select" required>
+                                <option value="pendiente" {% if acuerdo.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                                <option value="en_proceso" {% if acuerdo.estado == 'en_proceso' %}selected{% endif %}>En Proceso</option>
+                                <option value="completado" {% if acuerdo.estado == 'completado' %}selected{% endif %}>Completado</option>
+                                <option value="cancelado" {% if acuerdo.estado == 'cancelado' %}selected{% endif %}>Cancelado</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="observaciones" class="form-label">Observaciones (opcional)</label>
+                        <textarea id="observaciones" name="observaciones" class="form-textarea" rows="4">{{ acuerdo.observaciones }}</textarea>
+                    </div>
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="form-actions flex gap-4 no-print">
+                    <button type="submit" class="btn btn-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Guardar Cambios
+                    </button>
+                    <a href="{{ url_for('acuerdos') }}" class="btn btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Pie de página de impresión -->
+    <div class="print-footer">
+        <p>GUIDEX - Sistema de Gestión Orientación & Psicología | Fecha de impresión: <span id="print-date"></span></p>
+    </div>
+</div>
+
+<script>
+    // Establecer fecha de impresión
+    document.getElementById('print-date').textContent = new Date().toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+</script>
+{% endblock %}
