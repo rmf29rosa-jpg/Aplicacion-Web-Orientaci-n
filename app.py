@@ -167,7 +167,7 @@ def crear_reporte():
             INSERT INTO reportes (docente_id, orientadora_id, estudiante_nombre, 
                                 estudiante_grado, estudiante_seccion, motivo, descripcion, 
                                 fecha_hora, nombre_docente, estado)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendiente')
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (session['user_id'], orientadora_id, estudiante_nombre, 
               estudiante_grado, estudiante_seccion, motivo, descripcion, 
               fecha_hora, nombre_docente, 'pendiente'))
