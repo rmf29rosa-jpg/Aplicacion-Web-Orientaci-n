@@ -5,7 +5,7 @@ from datetime import datetime
 import json
 import os
 import uuid
-from weasyprint import HTML
+from fpdf import FPDF
 
 app = Flask(__name__)
 app.secret_key = 'guidex_secret_key_2024'
@@ -1278,6 +1278,20 @@ def eliminar_evidencia(id):
 # DESCARGAR PDFs
 # =========================================================================
 
+class PDF(FPDF):
+    def header(self):
+        self.set_font('Arial', 'B', 15)
+        self.cell(0, 10, 'GUIDEX - Sistema de Gestion Orientacion', 0, 1, 'C')
+        self.set_font('Arial', '', 10)
+        self.cell(0, 5, 'Sistema de Gestion Orientacion y Psicologia', 0, 1, 'C')
+        self.line(10, 25, 200, 25)
+        self.ln(10)
+    
+    def footer(self):
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 8)
+        self.cell(0, 10, f'Pagina {self.page_no()}', 0, 0, 'C')
+
 @app.route('/descargar_reporte_pdf/<int:id>')
 @login_required
 def descargar_reporte_pdf(id):
@@ -1296,10 +1310,62 @@ def descargar_reporte_pdf(id):
     if not reporte:
         return "Reporte no encontrado", 404
     
-    html = render_template('pdf_reporte.html', reporte=reporte)
-    pdf = HTML(string=html).write_pdf()
+    pdf = PDF()
+    pdf.add_page()
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 10, 'Reporte de Estudiante', 0, 1, 'C')
+    pdf.ln(5)
     
-    response = make_response(pdf)
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Estudiante:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, reporte['estudiante_nombre'], 0, 1)
+    
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Grado/Seccion:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, f"{reporte['estudiante_grado']} - {reporte['estudiante_seccion']}", 0, 1)
+    
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Estado:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, reporte['estado'], 0, 1)
+    
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Docente:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, reporte['docente_nombre'] or '', 0, 1)
+    
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Orientadora:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, reporte['orientadora_nombre'] or '', 0, 1)
+    
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Fecha:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, str(reporte['fecha_creacion']), 0, 1)
+    
+    pdf.ln(5)
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(0, 8, 'Motivo:', 0, 1)
+    pdf.set_font('Arial', '', 10)
+    pdf.multi_cell(0, 6, reporte['motivo'])
+    
+    pdf.ln(3)
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(0, 8, 'Descripcion:', 0, 1)
+    pdf.set_font('Arial', '', 10)
+    pdf.multi_cell(0, 6, reporte['descripcion'])
+    
+    if reporte['observaciones']:
+        pdf.ln(3)
+        pdf.set_font('Arial', 'B', 10)
+        pdf.cell(0, 8, 'Observaciones:', 0, 1)
+        pdf.set_font('Arial', '', 10)
+        pdf.multi_cell(0, 6, reporte['observaciones'])
+    
+    response = make_response(pdf.output(dest='S'))
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'attachment; filename=reporte_{id}.pdf'
     return response
@@ -1319,10 +1385,56 @@ def descargar_informe_pdf(id):
     if not informe:
         return "Informe no encontrado", 404
     
-    html = render_template('pdf_informe.html', informe=informe)
-    pdf = HTML(string=html).write_pdf()
+    pdf = PDF()
+    pdf.add_page()
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 10, 'Informe de Orientacion', 0, 1, 'C')
+    pdf.ln(5)
     
-    response = make_response(pdf)
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Estudiante:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, informe['estudiante_nombre'], 0, 1)
+    
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Grado/Seccion:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, f"{informe['estudiante_grado']} - {informe['estudiante_seccion']}", 0, 1)
+    
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Tipo:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, informe['tipo_informe'], 0, 1)
+    
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Orientadora:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, informe['orientadora_nombre'] or '', 0, 1)
+    
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Fecha:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, str(informe['fecha_creacion']), 0, 1)
+    
+    pdf.ln(5)
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(0, 8, 'Motivo:', 0, 1)
+    pdf.set_font('Arial', '', 10)
+    pdf.multi_cell(0, 6, informe['motivo'])
+    
+    pdf.ln(3)
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(0, 8, 'Descripcion:', 0, 1)
+    pdf.set_font('Arial', '', 10)
+    pdf.multi_cell(0, 6, informe['descripcion'])
+    
+    pdf.ln(3)
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(0, 8, 'Recomendaciones:', 0, 1)
+    pdf.set_font('Arial', '', 10)
+    pdf.multi_cell(0, 6, informe['recomendaciones'])
+    
+    response = make_response(pdf.output(dest='S'))
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'attachment; filename=informe_{id}.pdf'
     return response
@@ -1337,10 +1449,52 @@ def descargar_acuerdo_pdf(id):
     if not acuerdo:
         return "Acuerdo no encontrado", 404
     
-    html = render_template('pdf_acuerdo.html', acuerdo=acuerdo)
-    pdf = HTML(string=html).write_pdf()
+    pdf = PDF()
+    pdf.add_page()
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 10, 'Acuerdo y Compromiso', 0, 1, 'C')
+    pdf.ln(5)
     
-    response = make_response(pdf)
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Estudiante:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, acuerdo['estudiante_nombre'], 0, 1)
+    
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Titulo:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, acuerdo['titulo'], 0, 1)
+    
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Tipo:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, acuerdo['tipo_acuerdo'], 0, 1)
+    
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(50, 8, 'Estado:', 0, 0)
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 8, acuerdo['estado'], 0, 1)
+    
+    if acuerdo['fecha_limite']:
+        pdf.set_font('Arial', 'B', 10)
+        pdf.cell(50, 8, 'Fecha Limite:', 0, 0)
+        pdf.set_font('Arial', '', 10)
+        pdf.cell(0, 8, acuerdo['fecha_limite'], 0, 1)
+    
+    pdf.ln(5)
+    pdf.set_font('Arial', 'B', 10)
+    pdf.cell(0, 8, 'Descripcion:', 0, 1)
+    pdf.set_font('Arial', '', 10)
+    pdf.multi_cell(0, 6, acuerdo['descripcion'])
+    
+    if acuerdo['observaciones']:
+        pdf.ln(3)
+        pdf.set_font('Arial', 'B', 10)
+        pdf.cell(0, 8, 'Observaciones:', 0, 1)
+        pdf.set_font('Arial', '', 10)
+        pdf.multi_cell(0, 6, acuerdo['observaciones'])
+    
+    response = make_response(pdf.output(dest='S'))
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = f'attachment; filename=acuerdo_{id}.pdf'
     return response
