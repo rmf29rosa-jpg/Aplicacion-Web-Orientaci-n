@@ -23,6 +23,8 @@ with sqlite3.connect('database.db') as conn:
         estudiante_seccion TEXT NOT NULL,
         motivo TEXT NOT NULL,
         descripcion TEXT NOT NULL,
+        fecha_hora TEXT,
+        nombre_docente TEXT,
         estado TEXT DEFAULT 'pendiente',
         fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (docente_id) REFERENCES usuarios (id),
