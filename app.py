@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_from_directory, make_response
 from functools import wraps
 import sqlite3
 from datetime import datetime
 import json
 import os
 import uuid
+from weasyprint import HTML
 
 app = Flask(__name__)
 app.secret_key = 'guidex_secret_key_2024'
@@ -1272,6 +1273,77 @@ def eliminar_evidencia(id):
 # =========================================================================
 # FIN SISTEMA DE EVIDENCIAS
 # =========================================================================
+
+# =========================================================================
+# DESCARGAR PDFs
+# =========================================================================
+
+@app.route('/descargar_reporte_pdf/<int:id>')
+@login_required
+def descargar_reporte_pdf(id):
+    conn = get_db_connection()
+    reporte = conn.execute('''
+        SELECT r.*, 
+               docente.nombre as docente_nombre,
+               orientadora.nombre as orientadora_nombre
+        FROM reportes r
+        LEFT JOIN usuarios docente ON r.docente_id = docente.id
+        LEFT JOIN usuarios orientadora ON r.orientadora_id = orientadora.id
+        WHERE r.id = ?
+    ''', (id,)).fetchone()
+    conn.close()
+    
+    if not reporte:
+        return "Reporte no encontrado", 404
+    
+    html = render_template('pdf_reporte.html', reporte=reporte)
+    pdf = HTML(string=html).write_pdf()
+    
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename=reporte_{id}.pdf'
+    return response
+
+@app.route('/descargar_informe_pdf/<int:id>')
+@login_required
+def descargar_informe_pdf(id):
+    conn = get_db_connection()
+    informe = conn.execute('''
+        SELECT i.*, u.nombre as orientadora_nombre
+        FROM informes i
+        LEFT JOIN usuarios u ON i.orientadora_id = u.id
+        WHERE i.id = ?
+    ''', (id,)).fetchone()
+    conn.close()
+    
+    if not informe:
+        return "Informe no encontrado", 404
+    
+    html = render_template('pdf_informe.html', informe=informe)
+    pdf = HTML(string=html).write_pdf()
+    
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename=informe_{id}.pdf'
+    return response
+
+@app.route('/descargar_acuerdo_pdf/<int:id>')
+@login_required
+def descargar_acuerdo_pdf(id):
+    conn = get_db_connection()
+    acuerdo = conn.execute('SELECT * FROM acuerdos WHERE id = ?', (id,)).fetchone()
+    conn.close()
+    
+    if not acuerdo:
+        return "Acuerdo no encontrado", 404
+    
+    html = render_template('pdf_acuerdo.html', acuerdo=acuerdo)
+    pdf = HTML(string=html).write_pdf()
+    
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename=acuerdo_{id}.pdf'
+    return response
 
 if __name__ == "__main__":
     app.run(debug=True)

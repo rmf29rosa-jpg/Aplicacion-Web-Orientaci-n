@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Acuerdo</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 40px; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .info { margin: 20px 0; }
+        .info p { margin: 5px 0; }
+        .label { font-weight: bold; color: #555; }
+        .section { margin-top: 30px; }
+        .section h2 { color: #2980b9; font-size: 18px; }
+        .estado { display: inline-block; padding: 5px 15px; border-radius: 5px; 
+                  background: {% if acuerdo.estado == 'pendiente' %}#f39c12{% else %}#27ae60{% endif %}; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Acuerdo</h1>
+    
+    <div class="info">
+        <p><span class="label">Estudiante:</span> {{ acuerdo.estudiante_nombre }}</p>
+        <p><span class="label">Título:</span> {{ acuerdo.titulo }}</p>
+        <p><span class="label">Tipo:</span> {{ acuerdo.tipo_acuerdo }}</p>
+        <p><span class="label">Estado:</span> <span class="estado">{{ acuerdo.estado }}</span></p>
+        <p><span class="label">Fecha de creación:</span> {{ acuerdo.fecha_creacion }}</p>
+        {% if acuerdo.fecha_limite %}
+        <p><span class="label">Fecha límite:</span> {{ acuerdo.fecha_limite }}</p>
+        {% endif %}
+    </div>
+    
+    <div class="section">
+        <h2>Descripción</h2>
+        <p>{{ acuerdo.descripcion }}</p>
+    </div>
+    
+    {% if acuerdo.observaciones %}
+    <div class="section">
+        <h2>Observaciones</h2>
+        <p>{{ acuerdo.observaciones }}</p>
+    </div>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 40px; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .info { margin: 20px 0; }
+        .info p { margin: 5px 0; }
+        .label { font-weight: bold; color: #555; }
+        .section { margin-top: 30px; }
+        .section h2 { color: #2980b9; font-size: 18px; }
+        .estado { display: inline-block; padding: 5px 15px; border-radius: 5px; 
+                  background: {% if reporte.estado == 'pendiente' %}#f39c12{% else %}#27ae60{% endif %}; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Reporte de Estudiante</h1>
+    
+    <div class="info">
+        <p><span class="label">Estudiante:</span> {{ reporte.estudiante_nombre }}</p>
+        <p><span class="label">Grado:</span> {{ reporte.estudiante_grado }} - Sección: {{ reporte.estudiante_seccion }}</p>
+        <p><span class="label">Estado:</span> <span class="estado">{{ reporte.estado }}</span></p>
+        <p><span class="label">Fecha:</span> {{ reporte.fecha_creacion }}</p>
+    </div>
+    
+    <div class="section">
+        <h2>Información del Docente</h2>
+        <p><span class="label">Docente:</span> {{ reporte.docente_nombre }}</p>
+        <p><span class="label">Orientadora:</span> {{ reporte.orientadora_nombre }}</p>
+        {% if reporte.fecha_hora %}
+        <p><span class="label">Fecha/Hora Cita:</span> {{ reporte.fecha_hora }}</p>
+        {% endif %}
+    </div>
+    
+    <div class="section">
+        <h2>Motivo</h2>
+        <p>{{ reporte.motivo }}</p>
+    </div>
+    
+    <div class="section">
+        <h2>Descripción</h2>
+        <p>{{ reporte.descripcion }}</p>
+    </div>
+    
+    {% if reporte.observaciones %}
+    <div class="section">
+        <h2>Observaciones</h2>
+        <p>{{ reporte.observaciones }}</p>
+    </div>
+    {% endif %}
+</body>
+</html>
